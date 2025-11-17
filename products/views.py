@@ -180,7 +180,7 @@ def create_product(request):
                     'locations': product.shipping_info.locations
                 }
             
-            products.append({
+            product_dict = {
                 'id': str(product.id),
                 'itemtitle': product.title,
                 'description': product.description or '',
@@ -209,8 +209,9 @@ def create_product(request):
             
             # Add affiliate code only if it exists
             if product.affiliate_code:
-                products[-1]['Affiliate Code (Optional)'] = product.affiliate_code
-            })
+                product_dict['Affiliate Code (Optional)'] = product.affiliate_code
+            
+            products.append(product_dict)
         
         # Return array if multiple products, single object if one product
         if len(products) == 1 and not isinstance(request.data, list):
