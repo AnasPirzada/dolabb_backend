@@ -1,0 +1,20 @@
+[Unit]
+Description=Django Backend Gunicorn daemon
+After=network.target redis.service
+
+[Service]
+User=dolabbadmin
+Group=dolabbadmin
+WorkingDirectory=/home/dolabbadmin/dolabb_backend
+Environment="PATH=/home/dolabbadmin/dolabb_backend/venv/bin"
+Environment="DJANGO_SETTINGS_MODULE=dolabb_backend.settings_production"
+ExecStart=/home/dolabbadmin/dolabb_backend/venv/bin/gunicorn \
+    --config /home/dolabbadmin/dolabb_backend/gunicorn_config.py \
+    dolabb_backend.wsgi:application
+
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
+

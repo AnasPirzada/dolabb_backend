@@ -1,0 +1,33 @@
+# Django Settings
+# Generate SECRET_KEY using: python3 -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+SECRET_KEY=YOUR_SECRET_KEY_HERE
+DEBUG=False
+ALLOWED_HOSTS=68.178.161.175,175.161.178.68.host.secureserver.net
+DJANGO_SETTINGS_MODULE=dolabb_backend.settings_production
+
+# MongoDB Connection String
+# Format: mongodb+srv://username:password@cluster.mongodb.net/database_name?retryWrites=true&w=majority
+MONGODB_CONNECTION_STRING=your_mongodb_connection_string_here
+
+# JWT Secret Key (can be same as SECRET_KEY or different)
+JWT_SECRET_KEY=your-jwt-secret-key-here
+
+# Email Configuration (Resend)
+RESEND_API_KEY=your_resend_api_key_here
+RESEND_FROM_EMAIL=noreply@yourdomain.com
+OTP_EXPIRY_SECONDS=300
+
+# Moyasar Payment Gateway
+MOYASAR_SECRET_KEY=your_moyasar_secret_key_here
+MOYASAR_PUBLISHABLE_KEY=your_moyasar_publishable_key_here
+
+# Redis Configuration
+REDIS_HOST=127.0.0.1
+REDIS_PORT=6379
+
+# CORS Allowed Origins (comma-separated)
+CORS_ALLOWED_ORIGINS=http://68.178.161.175,https://68.178.161.175
+
+# Pagination
+PAGE_DEFAULT_LIMIT=10
+

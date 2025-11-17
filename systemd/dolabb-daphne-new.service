@@ -1,0 +1,21 @@
+[Unit]
+Description=Django Channels Daphne ASGI server
+After=network.target redis.service
+
+[Service]
+User=dolabbadmin
+Group=dolabbadmin
+WorkingDirectory=/home/dolabbadmin/dolabb_backend
+Environment="PATH=/home/dolabbadmin/dolabb_backend/venv/bin"
+Environment="DJANGO_SETTINGS_MODULE=dolabb_backend.settings_production"
+ExecStart=/home/dolabbadmin/dolabb_backend/venv/bin/daphne \
+    -b 127.0.0.1 \
+    -p 8001 \
+    dolabb_backend.asgi:application
+
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
+

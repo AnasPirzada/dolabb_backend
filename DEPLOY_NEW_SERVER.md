@@ -1,44 +1,49 @@
-# 🚀 Deploy to GoDaddy VPS - Step by Step
+# 🚀 Deploy to GoDaddy VPS - New Server Setup
 
 ## Your Server Information
 
 - **Server IP:** 68.178.161.175
-- **Host:** 175.161.178.68.host.secureserver.net
-- **OS:** AlmaLinux 9 (cPanel)
-- **VPS Username:** vps_YAPVeT
+- **Hostname:** 175.161.178.68.host.secureserver.net
+- **OS:** AlmaLinux 8
 - **cPanel Username:** dolabbadmin
+- **cPanel Password:** QKJzIcib#1Kl
+- **cPanel URL:** https://68.178.161.175:2083
+- **WHM URL:** https://68.178.161.175:2087
 
 ---
 
-## 📋 Step 1: Connect to Your Server from Windows
+## 📋 Step 1: Connect to Your Server
 
-### Option A: Using Windows Terminal (Recommended)
+### Option A: Using Windows Terminal/PowerShell
 
-1. **Open Windows Terminal** (Press `Win + X` and select "Windows Terminal")
+1. **Open Windows Terminal or PowerShell**
 
 2. **Connect via SSH:**
 
    ```bash
-   ssh vps_YAPVeT@68.178.161.175
+   ssh dolabbadmin@68.178.161.175
    ```
 
 3. **Enter password when prompted:**
 
    ```
-   2P3R6dXz6grrE7pNNLriumyQ9AT2yC
+   QKJzIcib#1Kl
    ```
 
 4. **Type `yes`** if asked to accept the host key
 
 ### Option B: Using WinSCP (For File Upload)
 
-1. **Open WinSCP**
+1. **Download and install WinSCP** (if not already installed)
+
+   - Download from: https://winscp.net/
+
 2. **Create New Session:**
    - File protocol: `SFTP`
    - Host name: `68.178.161.175`
    - Port number: `22`
-   - User name: `vps_YAPVeT`
-   - Password: `2P3R6dXz6grrE7pNNLriumyQ9AT2yC`
+   - User name: `dolabbadmin`
+   - Password: `QKJzIcib#1Kl`
    - Click **Login**
 
 ---
@@ -54,7 +59,7 @@ sudo su -
 # Update system
 yum update -y
 
-# Install required packages (AlmaLinux uses yum/dnf)
+# Install required packages (AlmaLinux 8 uses yum/dnf)
 yum install -y python3 python3-pip python3-devel nginx redis git gcc gcc-c++ make openssl-devel libffi-devel
 
 # Start and enable Redis
@@ -64,6 +69,10 @@ systemctl enable redis
 # Verify Redis is running
 redis-cli ping
 # Should return: PONG
+
+# Start and enable Nginx
+systemctl start nginx
+systemctl enable nginx
 ```
 
 ---
@@ -76,22 +85,25 @@ redis-cli ping
 
 2. **Navigate to destination:**
 
-   - Right side (server): Go to `/home/vps_YAPVeT/` or `/var/www/`
+   - Right side (server): Go to `/home/dolabbadmin/`
    - Create folder `dolabb_backend` if it doesn't exist
 
 3. **Upload files:**
    - Left side (Windows): Navigate to your project folder `D:\Fiver\backend`
-   - Select all files (Ctrl+A)
-   - Drag and drop to server folder
+   - Select all files (Ctrl+A) **EXCEPT**:
+     - `__pycache__` folders
+     - `*.pyc` files
+     - `db.sqlite3` (if exists)
+     - `.git` folder (if exists)
+   - Drag and drop to server folder `/home/dolabbadmin/dolabb_backend`
    - Wait for upload to complete
 
-### Or Create Directory First:
+### Or Create Directory First via SSH:
 
 ```bash
 # On server via SSH
-mkdir -p /home/vps_YAPVeT/dolabb_backend
-# or
-mkdir -p /var/www/dolabb_backend
+mkdir -p /home/dolabbadmin/dolabb_backend
+chmod 755 /home/dolabbadmin/dolabb_backend
 ```
 
 ---
@@ -102,9 +114,7 @@ mkdir -p /var/www/dolabb_backend
 
 ```bash
 # Navigate to project directory
-cd /home/vps_YAPVeT/dolabb_backend
-# or
-cd /var/www/dolabb_backend
+cd /home/dolabbadmin/dolabb_backend
 
 # Create virtual environment
 python3 -m venv venv
@@ -120,6 +130,10 @@ pip install -r requirements.txt
 mkdir -p logs
 mkdir -p media/uploads/profiles
 mkdir -p staticfiles
+
+# Set proper permissions
+chmod -R 755 media
+chmod -R 755 logs
 ```
 
 ---
@@ -128,6 +142,7 @@ mkdir -p staticfiles
 
 ```bash
 # On server, create .env file
+cd /home/dolabbadmin/dolabb_backend
 nano .env
 ```
 
@@ -135,7 +150,7 @@ nano .env
 
 ```env
 # Django Settings
-SECRET_KEY=django-insecure-CHANGE-THIS-TO-RANDOM-STRING
+SECRET_KEY=YOUR_SECRET_KEY_HERE
 DEBUG=False
 ALLOWED_HOSTS=68.178.161.175,175.161.178.68.host.secureserver.net
 DJANGO_SETTINGS_MODULE=dolabb_backend.settings_production
@@ -180,7 +195,7 @@ python3 -c "from django.core.management.utils import get_random_secret_key; prin
 
 ```bash
 # Make sure you're in project directory with venv activated
-cd /home/vps_YAPVeT/dolabb_backend
+cd /home/dolabbadmin/dolabb_backend
 source venv/bin/activate
 
 export DJANGO_SETTINGS_MODULE=dolabb_backend.settings_production
@@ -197,7 +212,7 @@ python manage.py collectstatic --noinput
 sudo nano /etc/systemd/system/dolabb-backend.service
 ```
 
-**Paste this (update path if different):**
+**Paste this:**
 
 ```ini
 [Unit]
@@ -205,13 +220,13 @@ Description=Django Backend Gunicorn daemon
 After=network.target redis.service
 
 [Service]
-User=vps_YAPVeT
-Group=vps_YAPVeT
-WorkingDirectory=/home/vps_YAPVeT/dolabb_backend
-Environment="PATH=/home/vps_YAPVeT/dolabb_backend/venv/bin"
+User=dolabbadmin
+Group=dolabbadmin
+WorkingDirectory=/home/dolabbadmin/dolabb_backend
+Environment="PATH=/home/dolabbadmin/dolabb_backend/venv/bin"
 Environment="DJANGO_SETTINGS_MODULE=dolabb_backend.settings_production"
-ExecStart=/home/vps_YAPVeT/dolabb_backend/venv/bin/gunicorn \
-    --config /home/vps_YAPVeT/dolabb_backend/gunicorn_config.py \
+ExecStart=/home/dolabbadmin/dolabb_backend/venv/bin/gunicorn \
+    --config /home/dolabbadmin/dolabb_backend/gunicorn_config.py \
     dolabb_backend.wsgi:application
 
 Restart=always
@@ -237,12 +252,12 @@ Description=Django Channels Daphne ASGI server
 After=network.target redis.service
 
 [Service]
-User=vps_YAPVeT
-Group=vps_YAPVeT
-WorkingDirectory=/home/vps_YAPVeT/dolabb_backend
-Environment="PATH=/home/vps_YAPVeT/dolabb_backend/venv/bin"
+User=dolabbadmin
+Group=dolabbadmin
+WorkingDirectory=/home/dolabbadmin/dolabb_backend
+Environment="PATH=/home/dolabbadmin/dolabb_backend/venv/bin"
 Environment="DJANGO_SETTINGS_MODULE=dolabb_backend.settings_production"
-ExecStart=/home/vps_YAPVeT/dolabb_backend/venv/bin/daphne \
+ExecStart=/home/dolabbadmin/dolabb_backend/venv/bin/daphne \
     -b 127.0.0.1 \
     -p 8001 \
     dolabb_backend.asgi:application
@@ -260,7 +275,7 @@ WantedBy=multi-user.target
 
 ```bash
 # Set ownership
-sudo chown -R vps_YAPVeT:vps_YAPVeT /home/vps_YAPVeT/dolabb_backend
+sudo chown -R dolabbadmin:dolabbadmin /home/dolabbadmin/dolabb_backend
 
 # Enable and start services
 sudo systemctl daemon-reload
@@ -304,14 +319,14 @@ server {
 
     # Static files
     location /static/ {
-        alias /home/vps_YAPVeT/dolabb_backend/staticfiles/;
+        alias /home/dolabbadmin/dolabb_backend/staticfiles/;
         expires 30d;
         add_header Cache-Control "public, immutable";
     }
 
     # Media files
     location /media/ {
-        alias /home/vps_YAPVeT/dolabb_backend/media/;
+        alias /home/dolabbadmin/dolabb_backend/media/;
         expires 7d;
         add_header Cache-Control "public";
     }
@@ -389,6 +404,16 @@ http://68.178.161.175/api/
 - Notifications:
   `ws://68.178.161.175/ws/notifications/<user_id>/?token=<jwt_token>`
 
+**API Endpoints:**
+
+- Authentication: `http://68.178.161.175/api/auth/`
+- Products: `http://68.178.161.175/api/products/`
+- Admin: `http://68.178.161.175/api/admin/`
+- Chat: `http://68.178.161.175/api/chat/`
+- Payments: `http://68.178.161.175/api/payment/`
+- Affiliates: `http://68.178.161.175/api/affiliate/`
+- Notifications: `http://68.178.161.175/api/notifications/`
+
 ---
 
 ## 🐛 Troubleshooting
@@ -419,7 +444,13 @@ sudo tail -f /var/log/nginx/dolabb_error.log
 ### Check Django logs:
 
 ```bash
-tail -f /home/vps_YAPVeT/dolabb_backend/logs/django.log
+tail -f /home/dolabbadmin/dolabb_backend/logs/django.log
+```
+
+### Check Gunicorn logs:
+
+```bash
+tail -f /home/dolabbadmin/dolabb_backend/logs/gunicorn_error.log
 ```
 
 ---
@@ -428,10 +459,10 @@ tail -f /home/vps_YAPVeT/dolabb_backend/logs/django.log
 
 ```bash
 # Connect to server
-ssh vps_YAPVeT@68.178.161.175
+ssh dolabbadmin@68.178.161.175
 
 # Navigate to project
-cd /home/vps_YAPVeT/dolabb_backend
+cd /home/dolabbadmin/dolabb_backend
 
 # Activate venv
 source venv/bin/activate
@@ -448,6 +479,14 @@ sudo journalctl -u dolabb-daphne -f
 
 ---
 
+## 🔒 Security Notes
+
+1. **Firewall:** Make sure ports 80 and 443 are open
+2. **SSL:** Consider setting up SSL certificate for HTTPS
+3. **.env file:** Never commit .env file to version control
+4. **Permissions:** Keep file permissions restrictive
+
+---
+
 **After completing these steps, your API will be live at:**
 **http://68.178.161.175/api/**
-
