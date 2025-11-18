@@ -27,7 +27,13 @@ if not SECRET_KEY:
 DEBUG = False
 
 # Update this with your actual domain
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',') if os.getenv('ALLOWED_HOSTS') else ['*']
+# ALLOWED_HOSTS should be comma-separated domain names (without https://)
+allowed_hosts_str = os.getenv('ALLOWED_HOSTS', '')
+if allowed_hosts_str:
+    # Split by comma and strip whitespace, remove https:// if present
+    ALLOWED_HOSTS = [host.strip().replace('https://', '').replace('http://', '') for host in allowed_hosts_str.split(',') if host.strip()]
+else:
+    ALLOWED_HOSTS = ['*']
 
 # Application definition
 INSTALLED_APPS = [

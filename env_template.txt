@@ -1,7 +1,7 @@
 # Django Settings
 SECRET_KEY=_kq%$1v06y5vj%7a=@4m@0()*mkn3(dyni%3@9d5vkup+ggb_g
 DEBUG=False
-ALLOWED_HOSTS=your-app-name.onrender.com
+ALLOWED_HOSTS=dolabb-backend.onrender.com
 DJANGO_SETTINGS_MODULE=dolabb_backend.settings_production
 
 # MongoDB Connection String
