@@ -28,6 +28,8 @@ Since `manage.py` is in the root of your repository, you should use the **root d
 
 **Runtime:** `Python 3`
 
+**⚠️ IMPORTANT:** Set `PYTHON_VERSION=3.11.0` in Environment Variables (see below)
+
 **Build Command:**
 ```bash
 ./build.sh
@@ -44,9 +46,13 @@ gunicorn dolabb_backend.wsgi:application --bind 0.0.0.0:$PORT
 
 ## 🔐 Environment Variables
 
+⚠️ **CRITICAL:** Your app will NOT start without these required variables!
+
+**See detailed guide:** [REQUIRED_ENV_VARIABLES.md](REQUIRED_ENV_VARIABLES.md)
+
 Add these environment variables in Render dashboard under **"Environment"** section:
 
-### Required Variables (Must Have):
+### ⚠️ REQUIRED Variables (App will crash without these):
 
 ```
 PYTHON_VERSION=3.11.0

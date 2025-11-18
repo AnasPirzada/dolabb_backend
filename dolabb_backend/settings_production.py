@@ -17,7 +17,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
 if not SECRET_KEY:
-    raise ValueError("SECRET_KEY must be set in production environment")
+    raise ValueError(
+        "SECRET_KEY must be set in production environment. "
+        "Please add SECRET_KEY environment variable in Render dashboard. "
+        "Generate one using: python -c \"from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())\""
+    )
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -78,7 +82,10 @@ ASGI_APPLICATION = 'dolabb_backend.asgi.application'
 # Database - MongoDB
 MONGODB_CONNECTION_STRING = os.getenv('MONGODB_CONNECTION_STRING')
 if not MONGODB_CONNECTION_STRING:
-    raise ValueError("MONGODB_CONNECTION_STRING must be set in production environment")
+    raise ValueError(
+        "MONGODB_CONNECTION_STRING must be set in production environment. "
+        "Please add MONGODB_CONNECTION_STRING environment variable in Render dashboard."
+    )
 
 mongoengine.connect(
     host=MONGODB_CONNECTION_STRING,
@@ -150,7 +157,11 @@ X_FRAME_OPTIONS = 'DENY'
 # JWT Configuration
 JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
 if not JWT_SECRET_KEY:
-    raise ValueError("JWT_SECRET_KEY must be set in production environment")
+    raise ValueError(
+        "JWT_SECRET_KEY must be set in production environment. "
+        "Please add JWT_SECRET_KEY environment variable in Render dashboard. "
+        "Generate one using: python -c \"from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())\""
+    )
 
 # Email Configuration (Resend)
 RESEND_API_KEY = os.getenv('RESEND_API_KEY')
