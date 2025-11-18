@@ -1,72 +1,71 @@
-# Dolabb Backend
+# Dolabb Backend - Django API
 
-Django REST Framework backend for Dolabb marketplace platform.
+Django REST API backend for Dolabb application.
 
-## Features
+## Render Deployment
 
-- ✅ User Authentication (Admin, Buyers, Sellers, Affiliates)
-- ✅ Product Management (CRUD, Search, Filter)
-- ✅ Real-time Chat System (WebSockets)
-- ✅ Offer Management
-- ✅ Payment Processing (Moyasar)
-- ✅ Admin Dashboard
-- ✅ Affiliate Program
-- ✅ Notification System (Real-time)
-- ✅ MongoDB Database
+This project is configured for deployment on Render.com.
 
-## Quick Start
+### Quick Deploy to Render
+
+1. **Push your code to GitHub/GitLab/Bitbucket**
+
+2. **Connect to Render:**
+   - Go to [Render Dashboard](https://dashboard.render.com)
+   - Click "New +" → "Blueprint"
+   - Connect your repository
+   - Render will automatically detect `render.yaml`
+
+3. **Set Environment Variables:**
+   In Render dashboard, add these environment variables:
+   - `SECRET_KEY` - Django secret key
+   - `ALLOWED_HOSTS` - Your Render domain (e.g., `your-app.onrender.com`)
+   - `MONGODB_CONNECTION_STRING` - Your MongoDB connection string
+   - `JWT_SECRET_KEY` - Secret key for JWT tokens
+   - `RESEND_API_KEY` - Resend email API key
+   - `RESEND_FROM_EMAIL` - Email address for sending emails
+   - `MOYASAR_SECRET_KEY` - Moyasar payment secret key
+   - `MOYASAR_PUBLISHABLE_KEY` - Moyasar publishable key
+   - `CORS_ALLOWED_ORIGINS` - Comma-separated list of allowed origins (e.g., `https://your-frontend.com`)
+
+4. **Redis Service:**
+   - The `render.yaml` includes a Redis service for WebSocket support
+   - Redis connection is automatically configured via `REDIS_URL`
+
+### Local Development
 
 1. **Install dependencies:**
    ```bash
    pip install -r requirements.txt
    ```
 
-2. **Configure environment:**
-   - Copy `.env.example` to `.env`
-   - Update MongoDB connection string
-   - Add Resend API key
-   - Add Moyasar API keys
+2. **Set up environment variables:**
+   - Copy `env_template.txt` to `.env`
+   - Fill in your configuration values
 
-3. **Run Redis** (for WebSockets):
+3. **Run migrations:**
    ```bash
-   redis-server
+   python manage.py migrate
    ```
 
-4. **Run server:**
+4. **Run development server:**
    ```bash
    python manage.py runserver
-   # Or for WebSockets:
-   daphne dolabb_backend.asgi:application
    ```
 
-## Documentation
+### API Endpoints
 
-See [SETUP_DOCUMENTATION.md](./SETUP_DOCUMENTATION.md) for detailed setup instructions including:
-- WebSockets configuration
-- Moyasar payment gateway setup
-- API documentation
-- Troubleshooting guide
+- Authentication: `/api/auth/`
+- Products: `/api/products/`
+- Admin Dashboard: `/api/admin/`
+- Chat: `/api/chat/`
+- Payments: `/api/payment/`
+- Affiliates: `/api/affiliate/`
+- Notifications: `/api/notifications/`
 
-## Project Structure
+### Requirements
 
-```
-dolabb_backend/
-├── authentication/      # User authentication
-├── admin_dashboard/      # Admin panel APIs
-├── products/            # Product management
-├── chat/                # Chat system (WebSockets)
-├── payments/            # Payment processing
-├── affiliates/          # Affiliate program
-└── notifications/       # Notification system
-```
-
-## API Base URL
-
-```
-http://localhost:8000/api/
-```
-
-## License
-
-Proprietary
+- Python 3.11+
+- MongoDB
+- Redis (for WebSocket support)
 

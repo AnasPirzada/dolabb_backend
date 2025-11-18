@@ -166,19 +166,45 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
 
 # Channel Layers Configuration (Redis for WebSockets)
-REDIS_HOST = os.getenv('REDIS_HOST', '127.0.0.1')
-REDIS_PORT = int(os.getenv('REDIS_PORT', 6379))
+# Render provides Redis connection string in REDIS_URL format: redis://host:port
+REDIS_URL = os.getenv('REDIS_URL')
+if REDIS_URL:
+    # Parse Redis URL (format: redis://host:port or redis://:password@host:port)
+    import urllib.parse
+    parsed = urllib.parse.urlparse(REDIS_URL)
+    REDIS_HOST = parsed.hostname or '127.0.0.1'
+    REDIS_PORT = parsed.port or 6379
+    REDIS_PASSWORD = parsed.password
+else:
+    REDIS_HOST = os.getenv('REDIS_HOST', '127.0.0.1')
+    REDIS_PORT = int(os.getenv('REDIS_PORT', 6379))
+    REDIS_PASSWORD = None
 
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [(REDIS_HOST, REDIS_PORT)],
+# Build Redis connection config
+if REDIS_PASSWORD:
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                "hosts": [f"redis://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}"],
+            },
         },
-    },
-}
+    }
+else:
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                "hosts": [(REDIS_HOST, REDIS_PORT)],
+            },
+        },
+    }
 
 # Logging Configuration
+# Create logs directory if it doesn't exist
+LOGS_DIR = os.path.join(BASE_DIR, 'logs')
+os.makedirs(LOGS_DIR, exist_ok=True)
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -192,7 +218,7 @@ LOGGING = {
         'file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs', 'django.log'),
+            'filename': os.path.join(LOGS_DIR, 'django.log'),
             'formatter': 'verbose',
         },
         'console': {
@@ -202,12 +228,12 @@ LOGGING = {
         },
     },
     'root': {
-        'handlers': ['file', 'console'],
+        'handlers': ['console'],  # Render logs to console for better visibility
         'level': 'INFO',
     },
     'loggers': {
         'django': {
-            'handlers': ['file', 'console'],
+            'handlers': ['console', 'file'],
             'level': 'INFO',
             'propagate': False,
         },

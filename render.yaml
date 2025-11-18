@@ -1,0 +1,53 @@
+services:
+  - type: web
+    name: dolabb-backend
+    runtime: python
+    plan: starter
+    buildCommand: ./build.sh
+    startCommand: gunicorn dolabb_backend.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: DJANGO_SETTINGS_MODULE
+        value: dolabb_backend.settings_production
+      - key: SECRET_KEY
+        sync: false
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        sync: false
+      - key: MONGODB_CONNECTION_STRING
+        sync: false
+      - key: JWT_SECRET_KEY
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM_EMAIL
+        sync: false
+      - key: MOYASAR_SECRET_KEY
+        sync: false
+      - key: MOYASAR_PUBLISHABLE_KEY
+        sync: false
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: dolabb-redis
+          property: connectionString
+      - key: REDIS_HOST
+        sync: false
+      - key: REDIS_PORT
+        value: "6379"
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
+      - key: SECURE_SSL_REDIRECT
+        value: "True"
+      - key: SESSION_COOKIE_SECURE
+        value: "True"
+      - key: CSRF_COOKIE_SECURE
+        value: "True"
+
+  - type: redis
+    name: dolabb-redis
+    plan: starter
+    ipAllowList: []
+

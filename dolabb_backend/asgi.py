@@ -13,7 +13,8 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
 import chat.routing
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'dolabb_backend.settings')
+# Use production settings if DJANGO_SETTINGS_MODULE is not set
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', os.getenv('DJANGO_SETTINGS_MODULE', 'dolabb_backend.settings_production'))
 
 # Initialize Django ASGI application early to ensure the AppRegistry
 # is populated before importing code that may import ORM models.
