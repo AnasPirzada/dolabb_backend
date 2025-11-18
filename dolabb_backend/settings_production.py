@@ -193,11 +193,12 @@ if not JWT_SECRET_KEY:
         "Please add JWT_SECRET_KEY environment variable in Render dashboard. "
         "Generate one using: python -c \"from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())\""
     )
+JWT_EXPIRES_IN = os.getenv('JWT_EXPIRES_IN', '1d')  # Default: 1 day
 
 # Email Configuration (Resend)
 RESEND_API_KEY = os.getenv('RESEND_API_KEY')
 RESEND_FROM_EMAIL = os.getenv('RESEND_FROM_EMAIL', 'noreply@example.com')
-OTP_EXPIRY_SECONDS = int(os.getenv('OTP_EXPIRY_SECONDS', 300))
+OTP_EXPIRY_SECONDS = int(os.getenv('OTP_EXPIRY_SECONDS', 300))  # Default: 5 minutes
 
 # Moyasar Payment Gateway
 MOYASAR_SECRET_KEY = os.getenv('MOYASAR_SECRET_KEY')
