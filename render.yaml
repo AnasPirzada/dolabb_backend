@@ -13,7 +13,7 @@ services:
       - key: SECRET_KEY
         sync: false
       - key: DEBUG
-        value: "False"
+        value: 'False'
       - key: ALLOWED_HOSTS
         sync: false
       - key: MONGODB_CONNECTION_STRING
@@ -36,19 +36,18 @@ services:
       - key: REDIS_HOST
         sync: false
       - key: REDIS_PORT
-        value: "6379"
+        value: '6379'
       - key: CORS_ALLOWED_ORIGINS
         sync: false
       - key: SECURE_SSL_REDIRECT
-        value: "True"
+        value: 'True'
       - key: SESSION_COOKIE_SECURE
-        value: "True"
+        value: 'True'
       - key: CSRF_COOKIE_SECURE
-        value: "True"
+        value: 'True'
 
   - type: redis
     name: dolabb-redis
     # Free tier Redis - remove plan specification for free tier
     # Note: Free tier Redis has limitations (25MB, single instance)
     ipAllowList: []
-
