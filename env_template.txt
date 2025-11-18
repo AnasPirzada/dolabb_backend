@@ -1,16 +1,15 @@
 # Django Settings
-# Generate SECRET_KEY using: python3 -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
-SECRET_KEY=YOUR_SECRET_KEY_HERE
+SECRET_KEY=_kq%$1v06y5vj%7a=@4m@0()*mkn3(dyni%3@9d5vkup+ggb_g
 DEBUG=False
-ALLOWED_HOSTS=68.178.161.175,175.161.178.68.host.secureserver.net
+ALLOWED_HOSTS=your-app-name.onrender.com
 DJANGO_SETTINGS_MODULE=dolabb_backend.settings_production
 
 # MongoDB Connection String
 # Format: mongodb+srv://username:password@cluster.mongodb.net/database_name?retryWrites=true&w=majority
 MONGODB_CONNECTION_STRING=your_mongodb_connection_string_here
 
-# JWT Secret Key (can be same as SECRET_KEY or different)
-JWT_SECRET_KEY=your-jwt-secret-key-here
+# JWT Secret Key
+JWT_SECRET_KEY=&bfztgn^+&j78ufa00(5vcv+z)ykg4bhym)ef@jg9q#z7464!%
 
 # Email Configuration (Resend)
 RESEND_API_KEY=your_resend_api_key_here
@@ -22,13 +21,8 @@ MOYASAR_SECRET_KEY=your_moyasar_secret_key_here
 MOYASAR_PUBLISHABLE_KEY=your_moyasar_publishable_key_here
 
 # Redis Configuration (Upstash Redis)
-# Option 1: Use full Redis URL (Recommended for Upstash)
-REDIS_URL=rediss://default:YOUR_UPSTASH_REDIS_TOKEN@YOUR_UPSTASH_REDIS_HOST:6379
-
-# Option 2: Use individual settings (for local Redis)
-# REDIS_HOST=127.0.0.1
-# REDIS_PORT=6379
-# REDIS_PASSWORD=
+# Use full Redis URL for Upstash
+REDIS_URL=rediss://default:AWi-AAIncDIzYjhjMWRhMzg1MmU0MjIwYmRjMzY4MGM3OTQ1NTNiYXAyMjY4MTQ@communal-wombat-26814.upstash.io:6379
 
 # Upstash Redis REST API (Optional - for REST API access)
 UPSTASH_REDIS_REST_URL=https://communal-wombat-26814.upstash.io
