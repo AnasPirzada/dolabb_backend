@@ -93,10 +93,36 @@ if not MONGODB_CONNECTION_STRING:
         "Please add MONGODB_CONNECTION_STRING environment variable in Render dashboard."
     )
 
-mongoengine.connect(
-    host=MONGODB_CONNECTION_STRING,
-    alias='default'
-)
+# Connect to MongoDB with proper SSL configuration for MongoDB Atlas
+try:
+    mongoengine.connect(
+        host=MONGODB_CONNECTION_STRING,
+        alias='default',
+        ssl=True,
+        ssl_cert_reqs=0,  # Don't verify SSL certificate (for MongoDB Atlas)
+        retryWrites=True,
+        w='majority',
+        serverSelectionTimeoutMS=5000,
+        socketTimeoutMS=20000,
+        connectTimeoutMS=20000,
+    )
+except Exception as e:
+    # If connection fails, try without explicit SSL parameters (connection string may handle it)
+    import urllib.parse
+    parsed = urllib.parse.urlparse(MONGODB_CONNECTION_STRING)
+    if parsed.scheme == 'mongodb+srv':
+        # For mongodb+srv, SSL is handled automatically
+        mongoengine.connect(
+            host=MONGODB_CONNECTION_STRING,
+            alias='default',
+            retryWrites=True,
+            w='majority',
+            serverSelectionTimeoutMS=5000,
+            socketTimeoutMS=20000,
+            connectTimeoutMS=20000,
+        )
+    else:
+        raise
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
