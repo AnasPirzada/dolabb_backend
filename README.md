@@ -6,25 +6,35 @@ Django REST API backend for Dolabb application.
 
 This project is configured for deployment on Render.com.
 
-### Quick Deploy to Render
+### Deployment Methods
+
+**Option 1: Manual Web Service Setup (Recommended for first-time users)**
+- See detailed guide: [RENDER_MANUAL_SETUP.md](RENDER_MANUAL_SETUP.md)
+- Quick reference: [RENDER_ENV_VARIABLES.txt](RENDER_ENV_VARIABLES.txt)
+
+**Option 2: Blueprint Deployment (Automated)**
+- Uses `render.yaml` for automatic setup
+
+### Quick Deploy to Render (Manual Web Service)
 
 **Important:** Render requires payment information on file even for free tier services. This is for verification purposes (they may charge $1 and immediately refund it). This is standard practice for cloud platforms.
 
-1. **Push your code to GitHub/GitLab/Bitbucket**
+### Manual Web Service Setup:
 
-2. **Add Payment Information:**
+1. **Add Payment Information:**
    - Go to [Render Dashboard](https://dashboard.render.com)
    - Navigate to **Account Settings** → **Billing**
    - Add your payment method (credit/debit card)
-   - This is required even for free tier services
 
-3. **Connect to Render:**
-   - Click "New +" → "Blueprint"
-   - Connect your repository
-   - Render will automatically detect `render.yaml`
+2. **Create Web Service:**
+   - Click "New +" → "Web Service"
+   - Connect your GitHub repository: `AnasPirzada/dolabb_backend`
+   - **Root Directory:** Leave EMPTY (or use `/`)
+   - **Build Command:** `./build.sh`
+   - **Start Command:** `gunicorn dolabb_backend.wsgi:application --bind 0.0.0.0:$PORT`
 
-4. **Set Environment Variables:**
-   In Render dashboard, add these environment variables:
+3. **Set Environment Variables:**
+   In Render dashboard → Environment section, add these variables (see [RENDER_ENV_VARIABLES.txt](RENDER_ENV_VARIABLES.txt) for complete list):
    - `SECRET_KEY` - Django secret key
    - `ALLOWED_HOSTS` - Your Render domain (e.g., `your-app.onrender.com`)
    - `MONGODB_CONNECTION_STRING` - Your MongoDB connection string
