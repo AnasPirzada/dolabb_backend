@@ -24,12 +24,12 @@ MOYASAR_PUBLISHABLE_KEY=your-moyasar-publishable-key-here
 CORS_ALLOWED_ORIGINS=https://your-frontend.com
 
 # ============================================
-# REDIS (Optional - Only if using Redis)
+# REDIS - Upstash Redis (For WebSockets)
 # ============================================
 
-REDIS_URL=redis://your-redis-host:6379
-REDIS_HOST=your-redis-host
-REDIS_PORT=6379
+REDIS_URL=rediss://default:AWi-AAIncDIzYjhjMWRhMzg1MmU0MjIwYmRjMzY4MGM3OTQ1NTNiYXAyMjY4MTQ@communal-wombat-26814.upstash.io:6379
+UPSTASH_REDIS_REST_URL=https://communal-wombat-26814.upstash.io
+UPSTASH_REDIS_REST_TOKEN=AWi-AAIncDIzYjhjMWRhMzg1MmU0MjIwYmRjMzY4MGM3OTQ1NTNiYXAyMjY4MTQ
 
 # ============================================
 # SECURITY SETTINGS (Optional)

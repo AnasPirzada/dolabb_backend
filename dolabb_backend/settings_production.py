@@ -177,39 +177,78 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
 
 # Channel Layers Configuration (Redis for WebSockets)
-# Render provides Redis connection string in REDIS_URL format: redis://host:port
+# Supports both local Redis and Upstash Redis (rediss:// protocol)
 REDIS_URL = os.getenv('REDIS_URL')
 if REDIS_URL:
-    # Parse Redis URL (format: redis://host:port or redis://:password@host:port)
+    # Parse Redis URL (format: redis://host:port, redis://:password@host:port, or rediss:// for SSL)
     import urllib.parse
     parsed = urllib.parse.urlparse(REDIS_URL)
     REDIS_HOST = parsed.hostname or '127.0.0.1'
     REDIS_PORT = parsed.port or 6379
-    REDIS_PASSWORD = parsed.password
+    REDIS_PASSWORD = parsed.password or parsed.username  # For Upstash, password might be in username
+    USE_SSL = parsed.scheme == 'rediss'  # Check if using SSL (rediss://)
+    
+    # For Upstash Redis with rediss:// protocol (SSL)
+    if USE_SSL:
+        # Extract password from URL (Upstash uses 'default' as username, token as password)
+        password = parsed.password or parsed.username
+        CHANNEL_LAYERS = {
+            'default': {
+                'BACKEND': 'channels_redis.core.RedisChannelLayer',
+                'CONFIG': {
+                    "hosts": [(REDIS_HOST, REDIS_PORT)],
+                    "connection_kwargs": {
+                        "ssl": True,
+                        "ssl_cert_reqs": None,  # Disable certificate verification for Upstash
+                        "password": password,
+                    },
+                },
+            },
+        }
+    else:
+        # Standard Redis connection
+        if REDIS_PASSWORD:
+            CHANNEL_LAYERS = {
+                'default': {
+                    'BACKEND': 'channels_redis.core.RedisChannelLayer',
+                    'CONFIG': {
+                        "hosts": [f"redis://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}"],
+                    },
+                },
+            }
+        else:
+            CHANNEL_LAYERS = {
+                'default': {
+                    'BACKEND': 'channels_redis.core.RedisChannelLayer',
+                    'CONFIG': {
+                        "hosts": [(REDIS_HOST, REDIS_PORT)],
+                    },
+                },
+            }
 else:
+    # Fallback to individual host/port settings
     REDIS_HOST = os.getenv('REDIS_HOST', '127.0.0.1')
     REDIS_PORT = int(os.getenv('REDIS_PORT', 6379))
-    REDIS_PASSWORD = None
-
-# Build Redis connection config
-if REDIS_PASSWORD:
-    CHANNEL_LAYERS = {
-        'default': {
-            'BACKEND': 'channels_redis.core.RedisChannelLayer',
-            'CONFIG': {
-                "hosts": [f"redis://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}"],
+    REDIS_PASSWORD = os.getenv('REDIS_PASSWORD')
+    
+    if REDIS_PASSWORD:
+        CHANNEL_LAYERS = {
+            'default': {
+                'BACKEND': 'channels_redis.core.RedisChannelLayer',
+                'CONFIG': {
+                    "hosts": [f"redis://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}"],
+                },
             },
-        },
-    }
-else:
-    CHANNEL_LAYERS = {
-        'default': {
-            'BACKEND': 'channels_redis.core.RedisChannelLayer',
-            'CONFIG': {
-                "hosts": [(REDIS_HOST, REDIS_PORT)],
+        }
+    else:
+        CHANNEL_LAYERS = {
+            'default': {
+                'BACKEND': 'channels_redis.core.RedisChannelLayer',
+                'CONFIG': {
+                    "hosts": [(REDIS_HOST, REDIS_PORT)],
+                },
             },
-        },
-    }
+        }
 
 # Logging Configuration
 # Create logs directory if it doesn't exist
