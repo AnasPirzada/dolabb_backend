@@ -2,7 +2,7 @@ services:
   - type: web
     name: dolabb-backend
     runtime: python
-    # Remove plan to use free tier (or set to free)
+    # Free tier - no plan specified
     buildCommand: ./build.sh
     startCommand: gunicorn dolabb_backend.wsgi:application --bind 0.0.0.0:$PORT
     envVars:
@@ -28,13 +28,10 @@ services:
         sync: false
       - key: MOYASAR_PUBLISHABLE_KEY
         sync: false
-      - key: REDIS_URL
-        fromService:
-          type: redis
-          name: dolabb-redis
-          property: connectionString
+      # Redis removed for free tier - WebSocket features will be limited
+      # You can add Redis later as a paid service if needed
       - key: REDIS_HOST
-        sync: false
+        value: "127.0.0.1"
       - key: REDIS_PORT
         value: "6379"
       - key: CORS_ALLOWED_ORIGINS
@@ -46,9 +43,6 @@ services:
       - key: CSRF_COOKIE_SECURE
         value: "True"
 
-  - type: redis
-    name: dolabb-redis
-    # Free tier Redis - remove plan specification for free tier
-    # Note: Free tier Redis has limitations (25MB, single instance)
-    ipAllowList: []
+# Redis service removed - free tier may not support it
+# If you need Redis for WebSockets, add it manually in Render dashboard as a paid service
 
