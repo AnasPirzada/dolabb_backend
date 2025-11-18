@@ -1,5 +1,21 @@
 # ⚠️ REQUIRED Environment Variables for Render
 
+## 🚨 CURRENT ERROR FIX
+
+**If you're seeing:** `JWT_SECRET_KEY must be set`
+
+**Quick Fix:**
+1. Go to Render Dashboard → Your Web Service → Environment
+2. Click "Add Environment Variable"
+3. Key: `JWT_SECRET_KEY`
+4. Value: Generate using command below
+5. Click "Save Changes"
+6. Render will restart automatically
+
+**Also check:** Make sure `PYTHON_VERSION=3.11.0` is set (you're currently using Python 3.13)
+
+---
+
 ## ❌ CRITICAL - App will NOT start without these:
 
 Add these in Render Dashboard → Your Web Service → Environment:
