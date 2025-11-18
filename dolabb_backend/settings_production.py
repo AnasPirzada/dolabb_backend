@@ -190,8 +190,12 @@ if REDIS_URL:
     
     # For Upstash Redis with rediss:// protocol (SSL)
     if USE_SSL:
-        # Extract password from URL (Upstash uses 'default' as username, token as password)
-        password = parsed.password or parsed.username
+        # Extract password from URL (Upstash format: rediss://default:TOKEN@host:port)
+        # Password is in parsed.password, username is 'default'
+        password = parsed.password
+        if not password:
+            # Fallback: sometimes token might be in username field
+            password = parsed.username if parsed.username != 'default' else None
         CHANNEL_LAYERS = {
             'default': {
                 'BACKEND': 'channels_redis.core.RedisChannelLayer',
